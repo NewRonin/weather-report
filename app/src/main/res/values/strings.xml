@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Weather Report</string>
+    <string name="connection_error"> Unexpected weather service error! Try again later. </string>
+    <string name="passing_error"> Something went wrong! Restart the app. </string>
+    <string name="unknown_location"> Unknown </string>
 </resources>

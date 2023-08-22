@@ -30,7 +30,7 @@
             android:autoSizeTextType="uniform"
             android:fontFamily="@font/raydis"
             android:gravity="center"
-            android:text="TextView" />
+            android:text="@string/unknown_location" />
     </androidx.cardview.widget.CardView>
 
     <ScrollView

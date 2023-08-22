@@ -7,6 +7,7 @@ public class AppConstants {
     val weatherAPIForecast: String = "/forecast.json"
 
     val forecastDuration: Int = 5;
+    val locationRequestCode = 66;
 
     val getWeatherAPIUrl =
         { city : String, lang : String -> weatherAPIBase + weatherAPIForecast + "?q=" + city + "&days=" + forecastDuration.toString() + "&lang=" + lang + "&key=" + weatherAPIKey }

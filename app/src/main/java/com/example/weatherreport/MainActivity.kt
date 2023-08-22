@@ -2,6 +2,7 @@ package com.example.weatherreport
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources.Theme
 import android.location.Geocoder
@@ -26,39 +27,34 @@ import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 66)
-        }
-
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
         val city : String?
 
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), 66)
-        }
+        try {
+            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-        if (location != null) {
-            city = getLocation(location.latitude, location.longitude)
-            city?.let { displayForecast(city) }
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION), AppConstants().locationRequestCode)
+
+            }
+
+            val location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            if (location != null) {
+                city = getLocation(location.latitude, location.longitude)
+                city?.let { displayForecast(city) }
+            }
+        } catch (e : Exception){
+            Toast.makeText(applicationContext, getString(R.string.passing_error), Toast.LENGTH_LONG).show()
         }
 
     }
@@ -99,11 +95,11 @@ class MainActivity : ComponentActivity() {
 
 
                 } catch (e: JSONException) {
-                    Toast.makeText(applicationContext, e.stackTraceToString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, getString(R.string.passing_error), Toast.LENGTH_LONG).show()
                 }
             },
             { error ->
-                // TODO: Handle error
+                Toast.makeText(applicationContext, getString(R.string.connection_error) , Toast.LENGTH_LONG).show()
             }
         )
 
@@ -136,5 +132,17 @@ class MainActivity : ComponentActivity() {
 
         val fDate = SimpleDateFormat("dd, E")
         return fDate.format(inDate)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == AppConstants().locationRequestCode) {
+            finish()
+            startActivity(intent)
+        }
     }
 }
